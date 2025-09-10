@@ -11,7 +11,9 @@ class UpdateNoteRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        //TODO: VALIDATE IF THE NOTE HAS COLABORATORS AND ITS ONE OF THEM IN THE REQUEST
+        $note = $this->route('note'); //Get note by Model binding
+        return ($note->user_id === $this->user()->id)? true: false; //Validate if owner is the same
     }
 
     /**
@@ -22,7 +24,11 @@ class UpdateNoteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "title" => "sometimes|string|min:8",
+            "content" => "sometimes|string",
+            "is_shared" => "sometimes|boolean",
+            "tags" => "sometimes|array|min:1",
+            "tags.*" => "required|string|exists:tags,id"
         ];
     }
 }

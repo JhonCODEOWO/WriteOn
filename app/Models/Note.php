@@ -12,6 +12,7 @@ class Note extends Model
 {
     public $incrementing = false;
     protected $keyType = 'string';
+    protected $guarded = ["id"];
 
     protected static function booted()
     {
@@ -31,6 +32,6 @@ class Note extends Model
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Note::class);
+        return $this->belongsToMany(Tag::class);
     }
 }
