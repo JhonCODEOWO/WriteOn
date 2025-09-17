@@ -6,6 +6,8 @@ use App\Dtos\NoteDto;
 use App\Dtos\NoteResourceDto;
 use App\Interfaces\RequestDtoInterface;
 use App\Models\Note;
+use App\Models\User;
+use App\UserResourceDto;
 use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -105,6 +107,59 @@ class NoteService
         } catch (Exception $ex) {
             DB::rollBack();
             Log::error('Cant delete note with uuid ' . $uuid);
+            abort(500);
+        }
+    }
+
+    
+    /**
+     *  Get available collaborators to assign by the given note
+     *
+     * @param  mixed $note
+     * @return array
+     */
+    public function availableCollaborators(Note $note): array{
+        $collaborators = $note->collaborators->pluck('id');
+
+        return User::whereNotIn('id', $collaborators)->get()->map(fn($user) => new UserResourceDto($user))->toArray();
+    }
+
+        
+    /**
+     *  Add collaborators to the note model provided
+     *
+     * @param  array $collaborators
+     * @param  App\Models\Note $note
+     * @return void
+     */
+    public function addCollaborators(array $collaborators, Note $note): bool{
+        DB::beginTransaction();
+        try {
+            $note->collaborators()->syncWithoutDetaching($collaborators);
+            DB::commit();
+            return true;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            Log::error('An error occurred on addCollaborators method ' . $ex->getMessage());
+            abort(500);
+        }
+    }
+    
+    /**
+     *  Delete the given from the given note
+     *
+     * @param  App\Models\Note $note
+     * @param  App\Models\User $user
+     * @return bool
+     */
+    public function deleteCollaborator(Note $note, User $user): bool{
+        DB::beginTransaction();
+        try {
+            $note->collaborators()->detach($user->id);
+            return true;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            Log::error("Can't delete collaborator cause of an error " . $ex->getMessage());
             abort(500);
         }
     }

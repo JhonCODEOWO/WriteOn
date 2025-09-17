@@ -34,4 +34,8 @@ class Note extends Model
     {
         return $this->belongsToMany(Tag::class);
     }
+
+    public function collaborators(): BelongsToMany{
+        return $this->belongsToMany(User::class);
+    }
 }
