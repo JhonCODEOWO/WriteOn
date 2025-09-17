@@ -21,13 +21,13 @@ class NoteDto implements RequestDtoInterface
     {
         $this->title = $reqData['title'] ?? null;
         $this->content = Purifier::clean($reqData['content'] ?? '');
-        $this->is_shared = $reqData['is_shared'] ?? null;
+        $this->is_shared = $reqData['is_shared'] ?? false;
         $this->user_id = $user_id;
         $this->tags = $reqData['tags'] ?? [];
     }
 
     public function toArray(): array
     {
-        return array_filter(get_object_vars($this), fn($element) => $element != null);
+        return array_filter(get_object_vars($this), fn($element) => $element !== null);
     }
 }

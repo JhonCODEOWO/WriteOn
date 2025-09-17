@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Tags;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreNoteRequest extends FormRequest
+class CreateTagRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,7 @@ class StoreNoteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => "required|string|min:8",
-            "content" => "required|string",
-            "is_shared" => "sometimes|boolean",
-            "tags" => "sometimes|array|min:1",
-            "tags.*" => "required|string|exists:tags,id"
+            "name" => "required|string|min:5|max:255"
         ];
     }
 }

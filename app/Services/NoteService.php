@@ -36,8 +36,8 @@ class NoteService
     {
         DB::beginTransaction();
         try {
-            //Try to create new note
-            $note = Note::create($data->toArray());
+            //Try to create new note and fresh the instance created
+            $note = Note::create($data->toArray())->fresh();
 
             //TODO: CREATE OR NOT TAGS BEFORE RELATED EACH ONE
 
