@@ -20,14 +20,15 @@ If you want use this project as a implementation or developing purposes you need
 
  1. Clone the repository using `git clone`
  2. Execute `npm install` and `composer install` to install all necessary dependencies of the application.
- 3.  Copy the .env file and place in it the credentials for your database engine
- 4. If you're in local or production environment be sure to write it in APP_ENV inside .env file.
- 5. Execute command `php artisan key:generate`
+ 3. Copy the .env file and place in it the credentials for your database engine
+ 4. Be sure to write all credentials to use websockets work inside the .env file
+ 5. If you're in **local** or **production** environment be sure to write it in **APP_ENV** inside .env file, some seed data are created based in the word wrote inside that key.
+ 6. Execute command `php artisan key:generate`
 
 ## Installation notes
 First you should cloned this project or download all the files inside your server and complete all requirements in global notes then you should complete the next steps: 
  1. Use the commands `php artisan migrate --seed`and `php artisan serve`.
- 2. Execute `npm run dev`
+ 2. Execute `npm run dev`, `php artisan reverb:start`
  3. Read all docs of the endpoints to implement this backend in your own applications.
 
 ## 📄 License
