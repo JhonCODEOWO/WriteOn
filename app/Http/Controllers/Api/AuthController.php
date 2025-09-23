@@ -23,12 +23,21 @@ class AuthController extends Controller
 
         $token = $user->createToken('web_auth');
         
-        return $token->plainTextToken;
+        return response()->json([
+            "token" => $token->plainTextToken,
+        ]);
     }
 
     public function logout(Request $req){
 
         $req->user()->currentAccessToken()->delete();
         return true;
+    }
+
+    public function currentUser(Request $req){
+        return response()->json([
+            "name" => $req->user()->name,
+            "id" => $req->user()->id
+        ]);
     }
 }

@@ -15,7 +15,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        //
+        return Tag::all()->map(fn($tag) => ["id"=> $tag->id, "name" => $tag->name]);
     }
 
     /**

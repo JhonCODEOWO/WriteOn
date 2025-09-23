@@ -22,7 +22,7 @@ class NoteService
      *
      * @return LengthAwarePaginator
      */
-    public function showAll(): LengthAwarePaginator{
+    public function showAll(?string $user_ID = null): LengthAwarePaginator{
         /** @var \Illuminate\Pagination\LengthAwarePaginator $notes */
         $notes = Note::paginate(10);
         $notes->setCollection($notes->getCollection()->map(fn($note) => new NoteResourceDto($note)));
