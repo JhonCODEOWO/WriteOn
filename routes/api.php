@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->controller(NoteController::class)->prefix('no
     Route::delete('collaborators/{note}/{user}', 'destroyCollaborator')->whereUuid('note', 'user');
     Route::patch('update/{note}', 'update')->whereUuid('note');
     Route::get('{note}', 'show')->whereUuid('note');
+    Route::delete('{note}/{tag}', 'deleteTag')->whereUuid('note', 'tag');
     Route::delete('{note}', 'destroy')->whereUuid('note');
 });
 

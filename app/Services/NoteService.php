@@ -24,7 +24,7 @@ class NoteService
      */
     public function showAll(?string $user_ID = null): LengthAwarePaginator{
         /** @var \Illuminate\Pagination\LengthAwarePaginator $notes */
-        $notes = Note::paginate(10);
+        $notes = (isset($user_ID))? Note::where('user_id', $user_ID)->paginate(10): Note::paginate(10);
         $notes->setCollection($notes->getCollection()->map(fn($note) => new NoteResourceDto($note)));
         return $notes;
     }
@@ -77,9 +77,12 @@ class NoteService
      */
     public function update(string $uuid, NoteDto $data): Note{
         DB::beginTransaction();
+        $arrayData = $data->toArray();
         try {
             $note = $this->find($uuid);
-            $note->update($data->toArray());
+            lOG::info($arrayData);
+            $note->update($arrayData); //Update note data
+            $note->tags()->syncWithoutDetaching($arrayData['tags'] ?? []);
             DB::commit();
             //TODO: VERIFY IF IS NECESSARY UPDATE ALL TAGS TOO
             return $note;

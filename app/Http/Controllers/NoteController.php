@@ -10,6 +10,7 @@ use App\Http\Requests\DestroyCollabRequest;
 use App\Models\Note;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\UpdateNoteRequest;
+use App\Models\Tag;
 use App\Models\User;
 use App\Services\NoteService;
 use Illuminate\Http\Request;
@@ -17,11 +18,11 @@ use Illuminate\Http\Request;
 class NoteController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     *  List all notes created by the user that make the request
      */
-    public function index(NoteService $noteService)
+    public function index(NoteService $noteService, Request $request)
     {
-        return $noteService->showAll();
+        return $noteService->showAll($request->user()->id);
     }
 
     /**
@@ -86,5 +87,10 @@ class NoteController extends Controller
 
     public function destroyCollaborator(Note $note, User $user, DestroyCollabRequest $request, NoteService $noteService){
         return $noteService->deleteCollaborator($note, $user);
+    }
+
+    public function deleteTag(Note $note, Tag $tag){
+        $note->tags()->detach($tag->id);
+        return response()->json(["message" => "success", "success" => true]);
     }
 }
