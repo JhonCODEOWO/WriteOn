@@ -28,6 +28,6 @@ class NoteDto implements RequestDtoInterface
 
     public function toArray(): array
     {
-        return array_filter(get_object_vars($this), fn($element) => is_bool($element) || !empty($element));
+        return array_filter(get_object_vars($this), fn($element) => (is_bool($element)) || !empty($element) || (empty($element) && is_array($element)));
     }
 }

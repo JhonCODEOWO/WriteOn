@@ -43,8 +43,13 @@ class NoteService
 
             //TODO: CREATE OR NOT TAGS BEFORE RELATED EACH ONE
 
+            //Get tags key from array dto element
+            
             //Try to add tags
-            $note->tags()->attach($data->toArray()['tags']);
+            $tags = $data->toArray()['tags'];
+
+            if(count($tags) > 0)
+                $note->tags()->attach($tags);
 
             DB::commit();
             return new NoteResourceDto($note);
@@ -110,7 +115,7 @@ class NoteService
         } catch (Exception $ex) {
             DB::rollBack();
             Log::error('Cant delete note with uuid ' . $uuid);
-            abort(500);
+            return false;
         }
     }
 

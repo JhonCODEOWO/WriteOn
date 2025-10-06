@@ -7,6 +7,7 @@ use App\Dtos\NoteResourceDto;
 use App\Http\Requests\AddCollaboratorsToNoteRequest;
 use App\Http\Requests\AddCollabToNoteRequest;
 use App\Http\Requests\DestroyCollabRequest;
+use App\Http\Requests\DestroyNoteRequest;
 use App\Models\Note;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\UpdateNoteRequest;
@@ -56,7 +57,7 @@ class NoteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Note $note, NoteService $noteService)
+    public function destroy(Note $note, NoteService $noteService, DestroyNoteRequest $req)
     {
         return $noteService->delete($note->id);
     }

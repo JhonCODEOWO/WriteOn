@@ -4,14 +4,16 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreNoteRequest extends FormRequest
+class DestroyNoteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        $user_id = $this->user()->id;
+        $note = $this->route('note');
+        return ($user_id === $note->user_id);
     }
 
     /**
@@ -22,11 +24,7 @@ class StoreNoteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => "required|string|min:8",
-            "content" => "required|string",
-            "is_shared" => "sometimes|boolean",
-            "tags" => "sometimes|array",
-            "tags.*" => "required|string|exists:tags,id"
+            //
         ];
     }
 }
