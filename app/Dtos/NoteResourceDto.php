@@ -4,6 +4,8 @@ namespace App\Dtos;
 
 use App\Models\Note;
 use App\Models\User;
+use App\UserResourceDto;
+use Illuminate\Database\Eloquent\Collection;
 
 class NoteResourceDto
 {
@@ -13,6 +15,7 @@ class NoteResourceDto
     public array $tags;
     public User $user;
     public bool $is_shared;
+    public Collection $collaborators;
     /**
      * Create a new class instance.
      */
@@ -23,5 +26,6 @@ class NoteResourceDto
         $this->content = $note->content;
         $this->tags = array_map(fn($tag) => $tag['name'],$note->tags->toArray());
         $this->is_shared = $note->is_shared;
+        $this->collaborators = $note->collaborators->map(fn($collaborator) => new UserResourceDto($collaborator));
     }
 }

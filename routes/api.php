@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\TagController;
 use Illuminate\Http\Request;
@@ -10,6 +11,10 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::middleware('auth:sanctum')->delete('logout', 'logout');
     Route::post('login', 'auth');
     Route::get('/user', 'currentUser')->middleware('auth:sanctum');
+});
+
+Route::middleware('auth:sanctum')->controller(UserController::class)->prefix('users')->group(function() {
+    Route::get('', 'index');
 });
 
 
