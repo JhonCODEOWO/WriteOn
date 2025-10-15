@@ -18,5 +18,7 @@ class UserSeeder extends Seeder
             User::factory()->create(["email" => "prueba@prueba.com", "password"=>"prueba123"]);
             User::factory()->hasNotes(5)->count(10)->create(["password"=>"prueba123"]);
         } 
+
+        if(app()->environment('production')) User::factory()->create(["email" => "initial@example.com", "password" => "initialAdmin"]);
     }
 }
