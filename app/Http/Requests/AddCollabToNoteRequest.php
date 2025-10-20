@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class AddCollabToNoteRequest extends FormRequest
 {
@@ -14,7 +15,7 @@ class AddCollabToNoteRequest extends FormRequest
     public function authorize(): bool
     {
         $note = $this->route('note');
-        return ($this->user()->id === $note->user_id && $note->is_shared)? true:false;
+        return $this->user()->id === $note->user_id;
     }
 
     /**
@@ -32,10 +33,15 @@ class AddCollabToNoteRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        //Take actions if the client add the same uuid of the owner
-        $this->merge([
-            "collaborators" => array_filter($this->input('collaborators'), fn($uuid) => $uuid != $this->user()->id)
-        ]);
+        //Take actions to prevent another not valid requests before execute operations using it
+        $collaborators = $this->input('collaborators');
+        
+        if(is_array($collaborators)){
+            //Take actions if the client add the same uuid of the owner
+            $this->merge([
+                "collaborators" => array_filter($this->input('collaborators'), fn($uuid) => $uuid != $this->user()->id)
+            ]);
+        }
     }
 
     protected function failedAuthorization()

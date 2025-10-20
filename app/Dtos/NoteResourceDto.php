@@ -5,7 +5,7 @@ namespace App\Dtos;
 use App\Models\Note;
 use App\Models\User;
 use App\UserResourceDto;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class NoteResourceDto
 {
