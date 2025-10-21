@@ -13,7 +13,7 @@ class NoteResourceDto
     public string $title;
     public string $content;
     public array $tags;
-    public User $user;
+    public UserResourceDto $owner;
     public bool $is_shared;
     public Collection $collaborators;
     /**
@@ -27,5 +27,6 @@ class NoteResourceDto
         $this->tags = array_map(fn($tag) => $tag['name'],$note->tags->toArray());
         $this->is_shared = $note->is_shared;
         $this->collaborators = $note->collaborators->map(fn($collaborator) => new UserResourceDto($collaborator));
+        $this->owner = new UserResourceDto($note->user);
     }
 }

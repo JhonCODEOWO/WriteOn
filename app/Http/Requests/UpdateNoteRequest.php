@@ -13,7 +13,7 @@ class UpdateNoteRequest extends FormRequest
     {
         //TODO: VALIDATE IF THE NOTE HAS COLABORATORS AND ITS ONE OF THEM IN THE REQUEST
         $note = $this->route('note'); //Get note by Model binding
-        return ($note->user_id === $this->user()->id)? true: false; //Validate if owner is the same
+        return ($note->user_id === $this->user()->id)? true: false; //Validate if owner is the same TODO: VERIFY IF THE USER EXISTS IN COLLABORATORS OF NOTE
     }
 
     /**

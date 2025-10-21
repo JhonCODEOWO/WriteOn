@@ -9,9 +9,12 @@ use App\Models\Note;
 use App\Models\User;
 use App\UserResourceDto;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use PDOException;
+use Throwable;
 
 class NoteService
 {
@@ -102,19 +105,19 @@ class NoteService
      * Delete a note from database
      *
      * @param  string $uuid
-     * @return void
+     * @return bool True if the note was deleted successfully
      */
     public function delete(string $uuid): bool
     {
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
             $note = $this->find($uuid);
             $note->delete();
             DB::commit();
             return true;
-        } catch (Exception $ex) {
+        } catch (PDOException $ex) {
             DB::rollBack();
-            Log::error('Cant delete note with uuid ' . $uuid);
+            Log::error('Cant delete note with uuid ' . $uuid . ' ' . $ex->getMessage());
             return false;
         }
     }
@@ -164,11 +167,12 @@ class NoteService
         DB::beginTransaction();
         try {
             $note->collaborators()->detach($user->id);
+            DB::commit();
             return true;
         } catch (Exception $ex) {
             DB::rollBack();
             Log::error("Can't delete collaborator cause of an error " . $ex->getMessage());
-            abort(500);
+            return false;
         }
     }
 }
