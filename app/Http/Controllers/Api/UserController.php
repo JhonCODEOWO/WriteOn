@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Dtos\UserRequestDto;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateUserRequest;
 use App\Models\User;
 use App\Services\UserService;
+use App\UserResourceDto;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -21,9 +24,11 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateUserRequest $request, UserService $userService)
     {
-        //
+        $dto = new UserRequestDto($request->validated('name'), $request->validated('email'), $request->validated('password'));
+        $newUser = new UserResourceDto($userService->create($dto));
+        return response()->json($newUser);
     }
 
     /**

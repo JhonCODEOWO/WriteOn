@@ -13,8 +13,9 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::get('/user', 'currentUser')->middleware('auth:sanctum');
 });
 
-Route::middleware('auth:sanctum')->controller(UserController::class)->prefix('users')->group(function() {
-    Route::get('', 'index');
+Route::controller(UserController::class)->prefix('users')->group(function() {
+    Route::middleware('auth:sanctum')->get('', 'index');
+    Route::post('', 'store');
 });
 
 
