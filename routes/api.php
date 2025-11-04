@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\ValidatorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,9 @@ Route::controller(UserController::class)->prefix('users')->group(function() {
     Route::post('', 'store');
 });
 
+Route::controller(ValidatorController::class)->prefix('check')->group(function(){
+    Route::middleware(['throttle:validations'])->get('available/{table}/{value}', 'unique');
+});
 
 Route::middleware('auth:sanctum')->controller(NoteController::class)->prefix('notes')->group(function () {
     Route::get('', 'index');
