@@ -27,3 +27,7 @@ Broadcast::channel('note.{noteID}', function(User $user, $noteID) {
     //If the user trying to subscribe is collaborator then give the subscription
     return $note && $note->is_shared ? $user: false;
 });
+
+Broadcast::channel('note-assigned.{userID}', function(User $user, $userID){
+    return $user->id === (string) $userID;
+});
