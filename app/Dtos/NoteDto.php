@@ -16,8 +16,9 @@ class NoteDto implements RequestDtoInterface
     /**
      * Create a new dto instance
      * @param array $reqData Data validated to pass in dto.
+     * @param ?string $user_id Id of a user to apply it in the resource
      */
-    public function __construct(array $reqData, string $user_id)
+    public function __construct(array $reqData, ?string $user_id = null)
     {
         $this->title = $reqData['title'] ?? null;
         $this->content = Purifier::clean($reqData['content'] ?? '');

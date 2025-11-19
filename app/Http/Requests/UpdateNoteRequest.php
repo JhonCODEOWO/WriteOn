@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class UpdateNoteRequest extends FormRequest
 {
@@ -11,9 +12,8 @@ class UpdateNoteRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        //TODO: VALIDATE IF THE NOTE HAS COLABORATORS AND ITS ONE OF THEM IN THE REQUEST
         $note = $this->route('note'); //Get note by Model binding
-        return ($note->user_id === $this->user()->id)? true: false; //Validate if owner is the same TODO: VERIFY IF THE USER EXISTS IN COLLABORATORS OF NOTE
+        return $note->user_id === $this->user()->id || $note->collaborators()->where('user_id', $this->user()->id)->exists(); //Validate if owner is the same or is a collaborator
     }
 
     /**
@@ -30,5 +30,12 @@ class UpdateNoteRequest extends FormRequest
             "tags" => "sometimes|array|min:1",
             "tags.*" => "required|string|exists:tags,id"
         ];
+    }
+
+    //Prepare data before apply validations
+    protected function prepareForValidation()
+    {
+        $note = $this->route('note');
+        if($this->user()->id !== $note->user->id && $this->has('is_shared')) $this->merge(["is_shared" => $note->is_shared]); //If the user is different than owner then apply the same older value of the note
     }
 }
