@@ -4,11 +4,13 @@ namespace App\Services;
 
 use App\Dtos\NoteDto;
 use App\Dtos\NoteResourceDto;
+use App\Events\AssignedToNote;
 use App\Events\UpdateNote;
 use App\Interfaces\RequestDtoInterface;
 use App\Models\Note;
 use App\Models\User;
 use App\UserResourceDto;
+use App\Utils\BroadcastNoteStateEnum;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -157,6 +159,10 @@ class NoteService
         DB::beginTransaction();
         try {
             $note->collaborators()->syncWithoutDetaching($collaborators);
+            foreach ($collaborators as $collaborator) {
+                $user = User::where('id', $collaborator)->first();
+                AssignedToNote::dispatch($user, $note);
+            }
             DB::commit();
             return true;
         } catch (Exception $ex) {
@@ -177,6 +183,7 @@ class NoteService
         DB::beginTransaction();
         try {
             $note->collaborators()->detach($user->id);
+            AssignedToNote::dispatch($user, $note, BroadcastNoteStateEnum::DETACHED);
             DB::commit();
             return true;
         } catch (Exception $ex) {
