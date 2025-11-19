@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Dtos\NoteResourceDto;
 use App\Models\Note;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -16,11 +17,16 @@ class UpdateNote implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
+     * The DTO to retrieve in this broadcast
+     */
+    private NoteResourceDto $note_resource;
+    /**
      * Create a new event instance.
+     * @param $note The note model to initialize in this broadcast id is used to create a private channel
      */
     public function __construct(public Note $note)
     {
-        //
+        $this->note_resource = new NoteResourceDto($note);
     }
 
     /**
@@ -35,5 +41,15 @@ class UpdateNote implements ShouldBroadcast
             // new PrivateChannel('note.'.$this->note->id),
             new PresenceChannel('note.'.$this->note->id)
         ];
+    }
+
+        
+    /**
+     *  Set the response to retrieve in each broadcast emission
+     *
+     * @return array
+     */
+    public function broadcastWith(): array {
+        return ["note" => $this->note_resource];
     }
 }

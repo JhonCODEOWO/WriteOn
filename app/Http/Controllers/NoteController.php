@@ -15,6 +15,7 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Services\NoteService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class NoteController extends Controller
 {
@@ -49,7 +50,7 @@ class NoteController extends Controller
      */
     public function update(UpdateNoteRequest $request, Note $note, NoteService $noteService)
     {
-        $noteDto = new NoteDto($request->validated(), $request->user()->id);
+        $noteDto = new NoteDto(reqData: $request->validated());
         $updated = new NoteResourceDto($noteService->update($note->id, $noteDto));
         return response()->json($updated);
     }
