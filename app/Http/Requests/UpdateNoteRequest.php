@@ -13,7 +13,7 @@ class UpdateNoteRequest extends FormRequest
     public function authorize(): bool
     {
         $note = $this->route('note'); //Get note by Model binding
-        return $note->user_id === $this->user()->id || $note->collaborators()->where('user_id', $this->user()->id)->exists(); //Validate if owner is the same TODO: VERIFY IF THE USER EXISTS IN COLLABORATORS OF NOTE
+        return $note->user_id === $this->user()->id || $note->collaborators()->where('user_id', $this->user()->id)->exists(); //Validate if owner is the same or is a collaborator
     }
 
     /**
