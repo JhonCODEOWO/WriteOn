@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Dtos\NoteDto;
 use App\Dtos\NoteResourceDto;
+use App\Events\UpdateNote;
 use App\Interfaces\RequestDtoInterface;
 use App\Models\Note;
 use App\Models\User;
@@ -26,8 +27,16 @@ class NoteService
      * @return LengthAwarePaginator
      */
     public function showAll(?string $user_ID = null): LengthAwarePaginator{
-        /** @var \Illuminate\Pagination\LengthAwarePaginator $notes */
-        $notes = (isset($user_ID))? Note::where('user_id', $user_ID)->paginate(10): Note::paginate(10);
+        //Define what query generate based on value of $user_ID
+        $query = (isset($user_ID))
+                            ? Note::where('user_id', $user_ID)
+                                ->orWhereHas('collaborators', function($q) use ($user_ID){
+                                    $q->where('user_id', $user_ID);
+                                })
+
+                            : Note::query();
+
+        $notes = $query->paginate(10);
         $notes->setCollection($notes->getCollection()->map(fn($note) => new NoteResourceDto($note)));
         return $notes;
     }
@@ -88,11 +97,12 @@ class NoteService
         $arrayData = $data->toArray();
         try {
             $note = $this->find($uuid);
-            lOG::info($arrayData);
             $note->update($arrayData); //Update note data
             $note->tags()->syncWithoutDetaching($arrayData['tags'] ?? []);
             DB::commit();
+            UpdateNote::dispatch($note);
             //TODO: VERIFY IF IS NECESSARY UPDATE ALL TAGS TOO
+            Log::info($note);
             return $note;
         } catch (Exception $ex) {
             DB::rollBack();
