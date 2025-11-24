@@ -37,9 +37,16 @@ class AddCollabToNoteRequest extends FormRequest
         $collaborators = $this->input('collaborators');
         
         if(is_array($collaborators)){
-            //Take actions if the client add the same uuid of the owner
+            $filteredUsers = array_filter($this->input('collaborators'), fn($uuid) => $uuid != $this->user()->id); //Clean array to get only users different than owner.
+
+            //Checks if the array contains only 1 element and if that element is the UUID of the user.
+            if(count($collaborators) === 1 && array_any($collaborators, fn($element) => $this->user()->id === $element)) {
+                throw ValidationException::withMessages(["collaborators" => "Can't add yourself as collaborator"]);
+            }
+
+            //Apply users
             $this->merge([
-                "collaborators" => array_filter($this->input('collaborators'), fn($uuid) => $uuid != $this->user()->id)
+                "collaborators" => array_values($filteredUsers)
             ]);
         }
     }
