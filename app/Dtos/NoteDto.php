@@ -22,7 +22,7 @@ class NoteDto implements RequestDtoInterface
     {
         $this->title = $reqData['title'] ?? null;
         $this->content = Purifier::clean($reqData['content'] ?? '');
-        $this->is_shared = $reqData['is_shared'] ?? false;
+        $this->is_shared = $reqData['is_shared'] ?? null;
         $this->user_id = $user_id;
         $this->tags = $reqData['tags'] ?? [];
     }

@@ -27,7 +27,7 @@ class AssignedToNote implements ShouldBroadcast
      * @param  bool $added Indicate if the note is assigned or deleted from
      * @return void
      */
-    public function __construct(public User $user, public Note $noteAssigned, public BroadcastNoteStateEnum $state = BroadcastNoteStateEnum::ASSIGNED)
+    public function __construct(public User $user, public Note|array $noteAssigned, public BroadcastNoteStateEnum $state = BroadcastNoteStateEnum::ASSIGNED)
     {}
 
     /**
@@ -43,8 +43,10 @@ class AssignedToNote implements ShouldBroadcast
     }
 
     public function broadcastWith(): array{
+        $note = $this->noteAssigned instanceof Note ? get_object_vars(new NoteResourceDto($this->noteAssigned)): get_object_vars($this->noteAssigned);
+
         return [
-            "note" => get_object_vars(new NoteResourceDto($this->noteAssigned)),
+            "note" => $note,
             "status" => $this->state
         ];
     }

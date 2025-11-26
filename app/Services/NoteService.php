@@ -102,9 +102,15 @@ class NoteService
             $note->update($arrayData); //Update note data
             $note->tags()->syncWithoutDetaching($arrayData['tags'] ?? []);
             DB::commit();
+            
+            //Broadcast to the note channel the new changes
             UpdateNote::dispatch($note);
+            
+            //Broadcast the updates to the channels for each collaborator user.
+            foreach ($note->collaborators as $collaborator) {
+                AssignedToNote::dispatch($collaborator, $note, BroadcastNoteStateEnum::UPDATED);
+            }
             //TODO: VERIFY IF IS NECESSARY UPDATE ALL TAGS TOO
-            Log::info($note);
             return $note;
         } catch (Exception $ex) {
             DB::rollBack();
@@ -124,8 +130,20 @@ class NoteService
         try {
             DB::beginTransaction();
             $note = $this->find($uuid);
+            
+            //Prepare payload data
+            $payloadData = array(
+                "note" => get_object_vars(new NoteResourceDto($note)),
+                "collaborators" => $note->collaborators
+            );
+
             $note->delete();
             DB::commit();
+
+            //Dispatch broadcasts to each old collaborator.
+            foreach ($payloadData['collaborators'] as $collaborator) {
+                AssignedToNote::dispatch($collaborator, $payloadData['note'], BroadcastNoteStateEnum::DETACHED);
+            }
             return true;
         } catch (PDOException $ex) {
             DB::rollBack();
