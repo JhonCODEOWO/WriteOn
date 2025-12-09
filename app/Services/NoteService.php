@@ -24,6 +24,7 @@ class NoteService
     
     /**
      *  Show all notes from DB 
+     *  $user_ID The id of the user, use it if you want get all notes related to it.
      *  @notes Add logic to retrieve notes from own user and notes that can edit.
      *
      * @return LengthAwarePaginator
