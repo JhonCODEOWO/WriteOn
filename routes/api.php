@@ -12,6 +12,8 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::middleware('auth:sanctum')->delete('logout', 'logout');
     Route::post('login', 'auth');
     Route::get('/user', 'currentUser')->middleware('auth:sanctum');
+    Route::post('recover-password-email', 'sendRecoverEmail');
+    Route::put('reset-password/{email}', 'resetPassword');
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function() {
